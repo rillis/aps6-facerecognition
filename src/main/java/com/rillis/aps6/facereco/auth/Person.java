@@ -1,12 +1,10 @@
 package com.rillis.aps6.facereco.auth;
 
-import com.rillis.aps6.facereco.Main;
+import com.rillis.aps6.facereco.gui.CameraGUI;
 import com.rillis.aps6.facereco.images.Picture;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Person {
     public static Map<Integer, Person> persons = new HashMap<>();
@@ -25,9 +23,9 @@ public class Person {
         this.labelID = labelID;
 
         ArrayList<Picture> pictures = new ArrayList<>();
-        File trainFolder = new File(Main.inputTrainingDir+"/"+labelID);
+        File trainFolder = new File(CameraGUI.inputTrainingDir+"/"+labelID);
         for(File trainFile : trainFolder.listFiles()) {
-            pictures.add(new Picture(Main.inputTrainingDir+"/"+labelID+"/"+trainFile.getName(), Main.trainingDir+"/"+labelID+"-"));
+            pictures.add(new Picture(CameraGUI.inputTrainingDir+"/"+labelID+"/"+trainFile.getName(), CameraGUI.trainingDir+"/"+labelID+"-"));
         }
         this.trainingPics = pictures.toArray(new Picture[0]);
     }

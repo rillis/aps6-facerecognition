@@ -1,18 +1,16 @@
 package com.rillis.aps6.facereco.recognition;
 
-import com.rillis.aps6.facereco.Main;
-import com.rillis.aps6.facereco.auth.Person;
-import com.rillis.aps6.facereco.images.Picture;
-import org.bytedeco.javacpp.Loader;
-import org.bytedeco.opencv.opencv_java;
+import com.rillis.aps6.facereco.auth.*;
+import com.rillis.aps6.facereco.gui.*;
+import com.rillis.aps6.facereco.images.*;
+import org.bytedeco.javacpp.*;
+import org.bytedeco.opencv.*;
 import org.opencv.core.*;
 import org.opencv.face.*;
-import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgcodecs.*;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 public class FaceRecognition {
     private static FaceRecognizer faceRecognizer = null;
@@ -26,22 +24,23 @@ public class FaceRecognition {
         }
     }
 
+    private static boolean initialized = false;
     public static void init(){
-        unload();
-
-        Loader.load(opencv_java.class);
-
-        //faceRecognizer = FisherFaceRecognizer.create();
-        faceRecognizer = LBPHFaceRecognizer.create();
+        if(!initialized){
+            unload();
+            Loader.load(opencv_java.class);
+            faceRecognizer = LBPHFaceRecognizer.create();
+            initialized = true;
+        }
     }
 
     public static void unload(){
-        wipeFolder(Main.testingDir);
-        wipeFolder(Main.trainingDir);
+        wipeFolder(CameraGUI.testingDir);
+        wipeFolder(CameraGUI.trainingDir);
     }
 
     public static void train(){
-        String trainingDir = Main.trainingDir;
+        String trainingDir = CameraGUI.trainingDir;
         File root = new File(trainingDir);
         File[] files = root.listFiles();
 
@@ -62,7 +61,7 @@ public class FaceRecognition {
     }
 
     public static Person recognize(String testImage) {
-        return recognize(new Picture(testImage, Main.testingDir+"/").getPicMat());
+        return recognize(new Picture(testImage, CameraGUI.testingDir+"/").getPicMat());
     }
 
     public static Person recognize(Mat mat){
@@ -72,14 +71,12 @@ public class FaceRecognition {
 
         double realConfidence = (200 - confidence[0])/200;
 
+        Person chosen = new Person();
         if(realConfidence > 0.7){
-            Person choosen = Person.persons.get(label[0]);
-            choosen.setConfidence(realConfidence);
-            return choosen;
+            chosen = Person.persons.get(label[0]);
         }
-        Person choosen = new Person();
-        choosen.setConfidence(realConfidence);
-        return choosen;
+        chosen.setConfidence(realConfidence);
+        return chosen;
     }
 
 }

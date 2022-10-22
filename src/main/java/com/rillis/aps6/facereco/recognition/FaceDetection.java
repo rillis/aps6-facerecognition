@@ -2,18 +2,19 @@ package com.rillis.aps6.facereco.recognition;
 
 
 import com.rillis.aps6.facereco.images.Picture;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
+import org.opencv.core.*;
 import org.opencv.objdetect.CascadeClassifier;
 
 public class FaceDetection {
     public static CascadeClassifier cascadeClassifier;
+    private static boolean initialized = false;
 
     public static void init(){
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        String xmlFile = "xml/lbpcascade_frontalface.xml";
-        cascadeClassifier = new CascadeClassifier(xmlFile);
+        if(!initialized){
+            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+            cascadeClassifier = new CascadeClassifier("xml/lbpcascade_frontalface.xml");
+            initialized = true;
+        }
     }
 
     public static MatOfRect detectFaces(Picture source){
